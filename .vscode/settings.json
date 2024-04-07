@@ -1,0 +1,9 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "__locale": "c",
+        "main2.C": "cpp",
+        "stdio.h": "c",
+        "ncurses.h": "c"
+    }
+}
