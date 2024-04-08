@@ -5,8 +5,6 @@
 #define TabSize 3
 char board[TabSize][TabSize];
 
-// ONE = 49
-
 void INIT_GAME() {
 	initscr();
 	raw();
@@ -21,35 +19,70 @@ void DONE_GAME() {
 }
 
 void init_board() {
-    char count='1';
 	for (unsigned int i=0; i<TabSize; i++) {
 		for (unsigned int j=0; j<TabSize; j++) {
-			board[i][j] = count;
-            count++;
+			board[i][j] = '0';
 		}
 	}
 }
 
+void display(char* val) {
+    for (int i=0; i<TabSize; i++) {
+        printw(val);
+    }
+}
+
 void display_board() {
+    int count=1;
 	move(0, 0);
 	printw("============= TIC TAC TOE =============\n");
 	printw("=======================================\n");
-	for (unsigned int i=0; i<TabSize; i++) {
-		printw("+ - - - - - - - - + - - - - - - - - + - - - - - - - - +\n");
-		printw("| %17 | %17 | %17 |\n");
+	for (int i=0; i<TabSize; i++) {
+		display("+ - - - - - - - - ");
+        printw("+\n|");
+
+        for (int i=0; i<TabSize; i++) {
+            printw(" %i %15 |", count);
+            count++;
+        }
+
+        printw("\n");
 		printw("|");
-		for (unsigned int j=0; j<TabSize; j++) {
-            printw("%9c", board[i][j]);
-            printw("%9|");
+		for (int j=0; j<TabSize; j++) {
+            if (board[i][j] != '0'){
+                printw("%9c", board[i][j]);
+                printw("%9|");
+            }
+            else {
+                printw("%18|");
+            }
 		}
-		printw("\n| %17 | %17 | %17 |\n");
+        printw("\n|");
+		display(" %17 |");
+        printw("\n");
+        
 	}
-	printw("+ - - - - - - - - + - - - - - - - - + - - - - - - - - +\n");
+    display("+ - - - - - - - - ");
+    printw("+\n");
 	refresh();
+}
+
+int count_TabCase() {
+    int count=TabSize*TabSize;
+    for (int i=0; i<TabSize; i++) {
+        for (int j=0; j<TabSize; j++) {
+            if (board[i][j]=='X' || board[i][j]=='O') {
+                count--;
+            }
+        }
+    }
+    return count;
 }
 
 int play(int dir) {
     if (dir==127){
+        printw("=========== (press a key) ===========");
+        getch();
         DONE_GAME();
         return 0;
     }
@@ -68,7 +101,14 @@ int play(int dir) {
     return 0;
 }
 
-int victory() {
+int game() {
+    if (!count_TabCase()) {
+        printw("============= Game Over =============\n");
+		printw("=========== (press a key) ===========");
+        getch();
+        return 1;
+    }
+
     return 0;
 }
 
@@ -78,7 +118,7 @@ int main() {
     display_board();
     int key = getch();
     int playing=1;
-    while (!victory()) {
+    while (!game()) {
         playing = play(key);
         key=getch();
     }
