@@ -41,13 +41,12 @@ void display_board() {
 		display("+ - - - - - - - - ");
         printw("+\n|");
 
-        for (int i=0; i<TabSize; i++) {
+        for (int k=0; k<TabSize; k++) {
             printw(" %i %15 |", count);
             count++;
         }
 
-        printw("\n");
-		printw("|");
+		printw("\n|");
 		for (int j=0; j<TabSize; j++) {
             if (board[i][j] != '0'){
                 printw("%9c", board[i][j]);
@@ -81,7 +80,8 @@ int count_TabCase() {
 
 int play(int dir) {
     if (dir==127){
-        printw("=========== (press a key) ===========");
+        printw("=============== FORFATE ===============\n");
+	    printw("============ (press a key) ============");
         getch();
         DONE_GAME();
         return 0;
@@ -101,14 +101,71 @@ int play(int dir) {
     return 0;
 }
 
+int check_row(int i) {
+    if (board[i][0]!='0' && board[i][0]==board[i][1] && board[i][1]==board[i][2]) {
+        if (board[i][0]=='X') {return 1;}
+        else {return 2;}
+    }
+    return 0;
+}
+
+int check_col(int j) {
+    if (board[0][j]!='0' && board[0][j]==board[1][j] && board[1][j]==board[2][j]) {
+        if (board[0][j]=='X') {return 1;}
+        else {return 2;}
+    }
+    return 0;
+}
+
+int check_diagonal() {
+    if (board[0][0]!='0' && board[0][0]==board[1][1] && board[1][1]==board[2][2]) {
+        if (board[0][0]=='X') {return 1;}
+        else {return 2;}
+    }
+    if (board[0][2]!='0' && board[0][2]==board[1][1] && board[1][1]==board[2][0]) {
+        if (board[0][0]=='X') {return 1;}
+        else {return 2;}
+    }
+    return 0;
+}
+
+int check_win() {
+    for (int i=0; i < TabSize; i++) {
+        if ((check_row(i) || check_col(i))) {
+            return 1;
+        }
+        else if (check_row(i)==2 || check_col(i)==2) {
+            return 2;
+        }
+    }
+    if (check_diagonal()) {
+        return 1;
+    }
+    else if (check_diagonal()==2) {
+        return 2;
+    }
+    return 0;
+}
+
 int game() {
-    if (!count_TabCase()) {
+    if (!count_TabCase() && !check_win()) {
+        printw("================== NULL ================\n");
+		printw("============= (press a key) ============");
+        getch();
+        return 1;
+    }
+    else if (check_win()==1){
+        printw("=============== Game WON =============\n");
+		printw("============ (press a key) ===========");
+        getch();
+        return 1;
+    }
+    else if (check_win()==2) {
         printw("============= Game Over =============\n");
 		printw("=========== (press a key) ===========");
         getch();
         return 1;
     }
-
     return 0;
 }
 
