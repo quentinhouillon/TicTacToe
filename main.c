@@ -7,10 +7,16 @@ char board[TabSize][TabSize];
 
 void INIT_GAME() {
 	initscr();
+    start_color();
 	raw();
 	keypad(stdscr, TRUE);
 	noecho();
 	srand(time(NULL));
+
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+    init_pair(3, COLOR_CYAN, COLOR_BLACK);
+    init_pair(4, COLOR_MAGENTA, COLOR_BLACK);
 }
 
 void DONE_GAME() {
@@ -40,26 +46,38 @@ void display_board() {
 	for (int i=0; i<TabSize; i++) {
 		display("+ - - - - - - - - ");
         printw("+\n|");
-
         for (int k=0; k<TabSize; k++) {
-            printw(" %i %15 |", count);
+            attron(COLOR_PAIR(3));
+            printw(" %i ", count);
+            attroff(A_COLOR);
+            printw("%15 |");
             count++;
         }
-
 		printw("\n|");
 		for (int j=0; j<TabSize; j++) {
-            if (board[i][j] != '0'){
-                printw("%9c", board[i][j]);
-                printw("%9|");
-            }
-            else {
-                printw("%18|");
+            switch(board[i][j]) {
+                case 'X':
+                    attron(COLOR_PAIR(1));
+                    printw("%9c", board[i][j]);
+                    attroff(A_COLOR);
+                    printw("%9|");
+                    break;
+                
+                case 'O':
+                    attron(COLOR_PAIR(2));
+                    printw("%9c", board[i][j]);
+                    attroff(A_COLOR);
+                    printw("%9|");
+                    break;
+                
+                default:
+                    printw("%18|");
+                    break;
             }
 		}
         printw("\n|");
 		display(" %17 |");
         printw("\n");
-        
 	}
     display("+ - - - - - - - - ");
     printw("+\n");
@@ -186,8 +204,10 @@ void bot_play() {
 
 int play(int dir) {
     if (dir==127){
+        attron(COLOR_PAIR(4));
         printw("=============== FORFATE ===============\n");
 	    printw("============ (press a key) ============");
+        attroff(A_COLOR);
         getch();
         DONE_GAME();
         return 0;
@@ -208,22 +228,28 @@ int play(int dir) {
 
 int game() {
     if (!count_TabCase() && !check_win()) {
+        attron(COLOR_PAIR(4));
         printw("================== NULL ================\n");
 		printw("============= (press a key) ============");
+        attroff(A_COLOR);
         display_board();
         getch();
         return 1;
     }
     else if (check_win()==1){
+        attron(COLOR_PAIR(1));
         printw("=============== Game WON =============\n");
 		printw("============ (press a key) ===========");
+        attroff(A_COLOR);
         display_board();
         getch();
         return 1;
     }
     else if (check_win()==2) {
+        attron(COLOR_PAIR(2));
         printw("============= Game Over =============\n");
 		printw("=========== (press a key) ===========");
+        attroff(A_COLOR);
         display_board();
         getch();
         return 1;
